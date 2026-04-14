@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white">
@@ -8,6 +10,14 @@ export default function Home() {
         <p className="text-gray-400 text-lg">
           Stella's architecture is online. The foundation is set.
         </p>
+
+        {/* Here is our high performance next.js Link */}
+        <Link 
+          href="/dashboard" 
+          className="px-8 py-3 bg-purple-600 hover:bg-perple-700 transition-all duration-300 rounded-lg font-bold text-white shadow-[0_0_15px_rgba(147,51,234,0.5)] hover:shadow-[0_0_25px_rgba(147,51,234,0.7)]"
+        >
+          Enter Command Center
+        </Link>
       </div>
     </main>
   );
