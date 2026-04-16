@@ -1,25 +1,41 @@
 "use client";
 
 import { useState } from 'react';
+// We are importing the bridge we forged earlier!
+import { supabase } from '../../lib/supabase'; 
 
 export default function Dashboard() {
-  // This is our State (our memory). 
-  // 'matches' is the current value. 'setMatches' is the tool to change it.
   const [matches, setMatches] = useState(0);
   const [status, setStatus] = useState("Operational");
   const [isScanning, setIsScanning] = useState(false);
 
-  // This is our function-the action that happens when we click the button.
-  const handleScan = () => {
+  // Notice the word 'async' here. We have to wait for the internet to respond.
+  const handleScan = async () => {
     setIsScanning(true);
-    setStatus("Scannong MAANG Databases...");
+    setStatus("Scanning MAANG databases...");
+    
+    // 1. Generate our data
+    const foundMatches = Math.floor(Math.random() * 5) + 1;
+    const finalStatus = "Scan Complete";
 
-    // We set a setTimeout to fake a 2-second dealy, like a real AI processing data.
-    setTimeout(() => {
-      setMatches(Math.floor(Math.random() * 5) + 1); // Fakes finding 1 - 5 job match making
-      setStatus("Scan Complete.");
-      setIsScanning(false);
-    }, 2000);
+    // 2. The Database Injection
+    // We tell Supabase to go to the 'scans' table and insert a new row.
+    const { error } = await supabase
+      .from('scans')
+      .insert([
+        { status: finalStatus, matches: foundMatches }
+      ]);
+
+    // 3. Update the UI based on what the database says
+    if (error) {
+      console.error("Vault Error:", error);
+      setStatus("Connection to vault failed.");
+    } else {
+      setMatches(foundMatches);
+      setStatus(finalStatus);
+    }
+    
+    setIsScanning(false);
   };
 
   return (
@@ -33,11 +49,10 @@ export default function Dashboard() {
               Command <span className="text-purple-500">Center</span>
             </h1>
             <p className="text-gray-400 mt-2">
-              Welcome to the inner sanctum, Rishav.
+              Welcome to the inner sanctum, Rishav. Telemetry is ONLINE.
             </p>
           </div>
           
-          {/* Our Action Button */}
           <button 
             onClick={handleScan}
             disabled={isScanning}
@@ -47,7 +62,7 @@ export default function Dashboard() {
                 : 'bg-green-600 hover:bg-green-500 shadow-[0_0_15px_rgba(22,163,74,0.4)]'
             }`}
           >
-            {isScanning ? "Processing..." : "Run Skill Scan"}
+            {isScanning ? "Transmitting..." : "Run Skill Scan"}
           </button>
         </div>
 
@@ -65,7 +80,7 @@ export default function Dashboard() {
           </div>
           <div className="border border-gray-800 bg-black p-6 rounded-xl">
             <h3 className="text-gray-500 text-sm font-medium">Architecture</h3>
-            <p className="text-xl font-bold text-gray-200 mt-2">Client Component</p>
+            <p className="text-xl font-bold text-blue-400 mt-2">Supabase Connected</p>
           </div>
         </div>
 
